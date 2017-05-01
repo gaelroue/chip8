@@ -9,7 +9,7 @@ pub struct CPU {
     pub v: [u8; 16],
     pub i: u16,
     pub jump: [u16; 16],
-    pub nbr_jump: u8,
+    pub jump_nbr: u8,
     pub system_counter: u8,
     pub sound_counter: u8,
     pub pc: u16,
@@ -22,7 +22,7 @@ impl CPU {
             v: [0; 16],
             i: 0,
             jump: [0; 16],
-            nbr_jump: 0,
+            jump_nbr: 0,
             system_counter: 0,
             sound_counter: 0,
             pc: START_ADDR
