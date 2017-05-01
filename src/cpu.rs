@@ -1,9 +1,6 @@
 const MEMORY_SIZE: usize = 4096;
 const START_ADDR: u16 = 512;
 
-const CPU_SPEED: usize = 4;
-const FPS: usize = 16;
-
 pub struct CPU {
     pub memory: [u8; MEMORY_SIZE],
     pub v: [u8; 16],

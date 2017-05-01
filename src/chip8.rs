@@ -26,8 +26,11 @@ impl<'a> CHIP8<'a> {
     }
 
     fn draw(&mut self, b1: u8, b2: u8, b3: u8) {
-        let (mut x, mut y, mut coding, mut j, mut shift): (u8, u8, u8, u8, u8) = (0, 0, 0, 0, 0);
-        self.cpu.v[0x16] = 0;
+        let (mut x, mut y, mut coding, mut j): (u8, u8, u8, u8) = (0, 0, 0, 0);
+        // shift must be integer and not unsigned, otherwise error in loop below because go under 0
+        // at ht last step
+        let mut shift: i8 = 0;
+        self.cpu.v[0xF] = 0;
 
         for k in 0..b1 {
             coding = self.cpu.memory[(self.cpu.i + k as u16) as usize]; // code of the line to draw
@@ -35,15 +38,15 @@ impl<'a> CHIP8<'a> {
             y = ( self.cpu.v[b2 as usize] + k) % HEIGHT as u8;
 
             shift = 7;
-            for j in 0..b3 {
+            for j in 0..8 {
                 x = (self.cpu.v[b3 as usize] + j) % WIDTH as u8;
 
                 if ((coding & (0x1 << shift)) != 0) {
-                    if (self.screen.buffer[(x as usize/DIMPIXEL) + (y as usize/DIMPIXEL) * WIDTH] == WHITE as u8) {
-                        self.screen.buffer[(x as usize/DIMPIXEL) + (y as usize/DIMPIXEL) * WIDTH] = BLACK as u8;
+                    if (self.screen.buffer[x as usize + y as usize * WIDTH] == WHITE as u8) {
+                        self.screen.buffer[x as usize + y as usize * WIDTH] = BLACK as u8;
                         self.cpu.v[0xF] = 1;
                     } else {
-                        self.screen.buffer[(x as usize/DIMPIXEL) + (y as usize/DIMPIXEL) * WIDTH] = WHITE as u8;
+                        self.screen.buffer[x as usize + y as usize * WIDTH] = WHITE as u8;
                     }
                 }
                 shift-=1;
@@ -162,7 +165,9 @@ impl<'a> CHIP8<'a> {
           22 => {
               self.cpu.v[b3 as usize] = rand::random::<u8>()%(((b2 as u8) << 4) + b1 as u8 + 1);
           },
-          23 => self.draw(b1, b2, b3),
+          23 => {
+              self.draw(b1, b2, b3);
+          },
           //24 =>,
           //25 =>,
           26 => {

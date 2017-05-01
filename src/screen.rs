@@ -2,6 +2,7 @@ use sdl2::render::{Renderer};
 use sdl2::{Sdl};
 use sdl2::rect::{Rect};
 use sdl2::pixels::{Color};
+use num::range_step;
 
 pub const BLACK: usize = 0;
 pub const WHITE: usize = 1;
@@ -33,12 +34,9 @@ impl<'a> Screen<'a> {
     }
 
     pub fn update(&mut self) {
-        let mut h = 0;
-        let mut w = 0;
-
         // iter over displayed screen
-        while h < SCREEN_H {
-           while w < SCREEN_W {
+       for h in range_step(0, SCREEN_H, DIMPIXEL) {
+           for w in range_step(0, SCREEN_W, DIMPIXEL) {
                // Check buffer to see if pixel is on or not
                 if self.buffer[(w/DIMPIXEL) + (h/DIMPIXEL) * WIDTH] == WHITE as u8 {
                     self.set_color(WHITE);
@@ -51,9 +49,7 @@ impl<'a> Screen<'a> {
                         Rect::new(w as i32, h as i32, DIMPIXEL as u32, DIMPIXEL as u32)
                     );
                 }
-                w = w + DIMPIXEL;
             }
-            h = h + DIMPIXEL;
         }
         self.renderer.present();
     }
